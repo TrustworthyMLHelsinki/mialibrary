@@ -1,0 +1,34 @@
+[project]
+name = "mialibrary"
+version = "0.1.5"
+description = "Efficient MIA implementations"
+readme = "README.md"
+authors = [{ name = "Haruka Buss", email = "haruka.buss@helsinki.fi" }, { name = "Marlon Tobaben"}, {name = "Joonas Jälkö"}]
+license-files = ["LICEN[CS]E*"]
+keywords = ["membership inference attack", "MIA", "LiRA", "RMIA"]
+dependencies = [
+    "jax==0.7.0",
+    "jaxlib==0.7.0",
+    "ml_dtypes>=0.5.1",
+    "numpy>=2.3.2",
+    "opt_einsum>=3.4.0",
+    "scipy>=1.16.0",
+    "scikit-learn>=1.6.1",
+    "matplotlib>=3.10.3"
+]
+requires-python = ">=3.11"
+
+
+[tool.setuptools]
+include-package-data = true
+# Include examples in binary/wheel distribution:
+packages = [ "mialibrary", "mialibrary.lira", "mialibrary.rmia", "mialibrary.examples"]
+package-dir = { "mialibrary" = "mialibrary", "mialibrary.examples" = "examples"}
+
+[tool.setuptools.package-data]
+# Make sure to include example Notebooks:
+"mialibrary.examples" = ["*.ipynb"]
+
+[build-system]
+requires = ["setuptools >= 40.8.0", "wheel"]
+

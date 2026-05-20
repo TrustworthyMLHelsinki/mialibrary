@@ -1,0 +1,4 @@
+dist*/
+*venv/
+data*/
+mialibrary.egg-info
