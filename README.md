@@ -1,6 +1,14 @@
 # mialibrary
 A simple library to conduct LiRA (Likelihood Ratio Attack) from Carlini et al. (2022) and RMIA (Robust Membership Inference Attack) from Zarifzadeh et al. (2024).
 
+## Installation
+
+You can install the library locally using `pip`:
+```bash
+pip install mialibrary
+```
+Available on PyPI: https://pypi.org/project/mialibrary/
+
 ## Core Functionality
 
 This library takes pre-computed shadow model outputs and shadow model training indices as input and computes the likelihood ratios.
@@ -24,9 +32,12 @@ $$
 
 where $f_\theta(x)_y$ denotes the predicted probability of class $y$.
 
+**RMIA (Robust Membership Inference Attack):**
+RMIA extends membership inference by computing the probability ratio of the target point's output against a dataset of reference population points. This estimates if the target model's behavior on the specific instance is highly disproportionate compared to the baseline population distribution.
+
 ## Required Input Files
 
-The library requires two input files from a model the user attacks:
+The library generally requires two input files from a model the user attacks:
 
 - `stat_{identifier}`: Pre-computed statistics from model outputs
     - Format: list of NumPy arrays, NumPy arrays, or JAX arrays
@@ -37,10 +48,14 @@ The library requires two input files from a model the user attacks:
     - Shape of in_indices: (m_models, n_samples)
     - Values: Boolean (True: used in training, False: not used)
 
+**Important Note for RMIA**: To conduct the RMIA (Robust Membership Inference Attack), you will **additionally need population points**. These are pre-computed statistics from a separate reference set of samples drawn from the population, which RMIA uses to estimate the baseline distribution of model outputs. They must be formatted as:
+- `stat_pop_{identifier}`: Pre-computed statistics for the population points
+    - Format: list of NumPy arrays, NumPy arrays, or JAX arrays
+
 
 ## Output
 
-- `scores_{identifier}`: LiRA scores (log-likelihood ratios)
+- `scores_{identifier}`: Attack scores (e.g., LiRA log-likelihood ratios or RMIA probability ratios)
     - Format: NumPy array
     - Shape: (m_models, n_samples)
     - Used to assess membership inference success
@@ -48,7 +63,8 @@ The library requires two input files from a model the user attacks:
 
 ## Basic Usage
 
-To compute the LiRA score, use one of the following commands in your terminal:
+### Computing LiRA scores
+To compute the LiRA score, use the following command in your terminal:
 
 ```bash
 # For standard LiRA computation using median and global variance.
@@ -57,7 +73,15 @@ python -m mialibrary.lira.process_fast_lira --data_path /path/to/data --use_medi
 
 In this example, scores will be calculated based on global variance and per-example median. With JAX acceleration, the score computation takes approximately **1-2 seconds**, regardless of the number of CPUs.
 
-More example usages can be found in '/examples' in the library.
+### Computing RMIA scores
+To compute the RMIA score, use this command:
+
+```bash
+# RMIA score computation. Note: Ensure `stat_pop_*` files are present in the directory.
+python -m mialibrary.rmia.process_rmia --data_path /path/to/data
+```
+
+More example usages can be found in `/examples` in the library.
 It also includes small data which demonstrates the score computation and how the data is expected.
 
 Note: This library focuses solely on score computation and evaluation. Model training and statistic computation should be handled separately.
